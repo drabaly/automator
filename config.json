@@ -1,0 +1,14 @@
+[
+  {
+    "binary": "ls",
+    "arguments": "-lah $location",
+    "output": "test_ls"
+  },
+  {
+    "binary": "ip",
+    "arguments": "a"
+  },
+  {
+    "binary": "pwd"
+  }
+]
