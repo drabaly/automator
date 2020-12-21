@@ -79,6 +79,8 @@ def run(configs):
             process = subprocess.Popen(command)
         if not parallel:
             process.wait()
+        else:
+            program["process"] = process
 
 variables = parse_arguments()
 
@@ -94,3 +96,7 @@ configs = json.loads(raw_configs)
 eval_arguments(configs, variables)
 
 run(configs)
+
+if parallel:
+    for program in configs:
+        program["process"].wait()
