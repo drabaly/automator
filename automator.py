@@ -11,6 +11,7 @@ parallel = False
 rows, columns = os.popen('stty size', 'r').read().split()
 rows = int(rows)
 columns = int(columns) - 4
+colors = False
 
 def help():
     print("\n    ".join(textwrap.wrap("usage: python3 ./automator [-help] [-parallel] [-config] [-<variables>]", columns)))
@@ -19,7 +20,8 @@ def help():
     print("\n    ".join(textwrap.wrap("-help: print the help (this screen) and exit.", columns)))
     print("\n    ".join(textwrap.wrap("-config: the config file in which are described the programs to run and the options to run them (explained below). The default configuration file is \"config.json\".", columns)))
     print("\n    ".join(textwrap.wrap("-parallel: run the different programs described in the config file in parallel.", columns)))
-    print("\n    ".join(textwrap.wrap("The -help and -parallel are the only parameters that do not expect values.", columns)))
+    print("\n    ".join(textwrap.wrap("-color: color the output differently for each program.", columns)))
+    print("\n    ".join(textwrap.wrap("The -help, -parallel and -color are the only parameters that do not expect values.", columns)))
     print()
     print("====Configuration file====")
     print("\n    ".join(textwrap.wrap("The configuration file is composed of a JSON list containing dictionaries with currently 3 keys:", columns)))
@@ -45,6 +47,10 @@ def parse_arguments():
                 global parallel
                 parallel = True
                 continue
+            if elt == "-color":
+                global colors
+                colors = True
+                continue
             if equal.search(elt):
                 variable = elt.split('=')
                 variables[variable[0][1:]] = variable[1]
@@ -67,18 +73,34 @@ def eval_arguments(configs, variables):
 
 def run(configs):
     print(f"Run in parallel: {parallel}")
+    i = 31
     for program in configs:
         command = [program["binary"]]
         if "arguments" in program:
             command += program["arguments"].split(" ")
-        print(' '.join(command))
+        if not "output" in program:
+            if colors:
+                print("\033[{}m{}\033[0m".format(i, ' '.join(command)))
+                i += 1
+            else:
+                print(' '.join(command))
+        else:
+            print(' '.join(command))
         if "output" in program:
             with open(program["output"], "w") as output:
                 process = subprocess.Popen(command, stdout=output)
         else:
-            process = subprocess.Popen(command)
+            process = subprocess.Popen(command, stdout=subprocess.PIPE)
         if not parallel:
+            # print output
             process.wait()
+            if not "output" in program:
+                if colors:
+                    i -= 1
+                    print("\033[{}m{}\033[0m".format(i, process.stdout.read().decode()))
+                    i += 1
+                else:
+                    print(process.stdout.read().decode())
         else:
             program["process"] = process
 
@@ -98,5 +120,20 @@ eval_arguments(configs, variables)
 run(configs)
 
 if parallel:
-    for program in configs:
-        program["process"].wait()
+    # add poll of output in variable and print with color
+
+    new_configs = configs
+    while len(new_configs) > 0:
+        i = 31
+        new_configs = []
+        for program in configs:
+            if "output" in program:
+                continue
+            out = program["process"].stdout.read().decode()
+            if colors:
+                print(f"\033[{i}m{out}\033[0m", end='')
+            else:
+                print(out, end='')
+            if program["process"].poll() is None:
+                new_configs.append(program)
+            i += 1
