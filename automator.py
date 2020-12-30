@@ -129,7 +129,7 @@ if parallel:
         for program in configs:
             if "output" in program:
                 continue
-            out = program["process"].stdout.read().decode()
+            out = (b"".join(program["process"].stdout.readlines(1024))).decode()
             if colors:
                 print(f"\033[{i}m{out}\033[0m", end='')
             else:
