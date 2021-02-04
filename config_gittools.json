@@ -1,0 +1,10 @@
+[
+  {
+    "binary": "gitdumper",
+    "arguments": "$URL $tmp_dir"
+  },
+  {
+    "binary": "gitextractor",
+    "arguments": "$tmp_dir $dir"
+  }
+]

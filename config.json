@@ -10,6 +10,11 @@
     "output": "nmap_results.txt"
   },
   {
+    "binary": "nikto",
+    "arguments": "--host $URL",
+    "output": "nikto_results.txt"
+  },
+  {
     "binary": "dirsearch",
     "arguments": "-e php,htm,js,bak,zip,tgz,txt,old,html,conf -f -r -u $URL",
     "output": "dirsearch_result.txt"
