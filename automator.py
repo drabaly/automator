@@ -25,9 +25,9 @@ def help():
     print()
     print("====Configuration file====")
     print("\n    ".join(textwrap.wrap("The configuration file is composed of a JSON list containing dictionaries with currently 3 keys:", columns)))
-    print("\n        ".join(textwrap.wrap("        binary: The location of the binary to run.", columns)))
-    print("\n        ".join(textwrap.wrap("        arguments: The arguments to provide to the binary.", columns)))
-    print("\n        ".join(textwrap.wrap("        output: The desired file in which you the output of the binary.", columns)))
+    print("\n        ".join(textwrap.wrap("        - binary: The location of the binary to run.", columns)))
+    print("\n        ".join(textwrap.wrap("        - arguments: The arguments to provide to the binary.", columns)))
+    print("\n        ".join(textwrap.wrap("        - output: The desired file in which you the output of the binary.", columns)))
     print()
     print("====Variable====")
     print("\n    ".join(textwrap.wrap("The arguments of the configuration file can be composed of variables which are wroten using a $ sign like so: \"$foo\".", columns)))
@@ -55,7 +55,10 @@ def parse_arguments():
                 variable = elt.split('=')
                 variables[variable[0][1:]] = variable[1]
             else:
-                variables[elt[1:]] = next(arguments)[1]
+                try:
+                    variables[elt[1:]] = next(arguments)[1]
+                except StopIteration:
+                    break
         else:
             print("Error while parsing arguments")
             exit(1)
@@ -68,8 +71,12 @@ def eval_arguments(configs, variables):
             continue
         argument_location = dollar.search(program["arguments"])
         while argument_location:
-            program["arguments"] = program["arguments"].replace(argument_location.group(), variables[argument_location.group()[1:]], 1)
-            argument_location = dollar.search(program["arguments"])
+            try:
+                program["arguments"] = program["arguments"].replace(argument_location.group(), variables[argument_location.group()[1:]], 1)
+                argument_location = dollar.search(program["arguments"])
+            except KeyError:
+                print(f"\"{argument_location.group()[1:]}\" not found in the arguments.")
+                exit(1)
 
 def run(configs):
     print(f"Run in parallel: {parallel}")
