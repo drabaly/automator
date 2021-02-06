@@ -5,7 +5,7 @@
     "output": "dig_results.txt"
   },
   {
-    "binary": "namp",
+    "binary": "nmap",
     "arguments": "-p- -Pn $domain",
     "output": "nmap_results.txt"
   },
