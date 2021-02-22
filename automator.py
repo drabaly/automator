@@ -116,9 +116,17 @@ variables = parse_arguments()
 config_source = "./config.json"
 if ("config" in  variables):
     config_source = variables["config"]
-
-with open(config_source, "r") as config_file:
-    raw_configs = config_file.read()
+try:
+    with open(config_source, "r") as config_file:
+        raw_configs = config_file.read()
+except FileNotFoundError:
+    print("Config file not found, using default one.")
+    try:
+        with open("/opt/automator/config.json", "r") as config_file:
+            raw_configs = config_file.read()
+    except FileNotFoundError:
+        print("Default config file not found, exiting.")
+        exit(1)
 
 configs = json.loads(raw_configs)
 
