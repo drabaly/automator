@@ -16,7 +16,7 @@
   },
   {
     "binary": "dirsearch",
-    "arguments": "-e php,htm,js,bak,zip,tgz,txt,old,html,conf,asp,aspx -f -r -u $URL",
+    "arguments": "-e php,htm,js,bak,zip,tgz,txt,old,html,conf,asp,aspx,%20,config,log,xhtml -f -r -u $URL",
     "output": "dirsearch_result.txt"
   },
   {
@@ -28,5 +28,10 @@
     "binary": "testssl",
     "arguments": "$URL",
     "output": "testssl_result.txt"
+  },
+  {
+    "binary": "wafw00f",
+    "arguments": "$URL",
+    "output": "wafw00f_result.txt"
   }
 ]
