@@ -95,6 +95,7 @@ def run(configs):
             print(' '.join(command))
         if "output" in program:
             with open(program["output"], "w") as output:
+                output.write(f'> {" ".join(command)}\n\n')
                 process = subprocess.Popen(command, stdout=output)
         else:
             process = subprocess.Popen(command, stdout=subprocess.PIPE)
