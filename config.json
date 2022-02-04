@@ -15,6 +15,11 @@
     "output": "nikto_results.txt"
   },
   {
+    "binary": "nuclei",
+    "arguments": "-u $URL -ni -silent",
+    "output": "nuclei_results.txt"
+  },
+  {
     "binary": "dirsearch",
     "arguments": "-e php,htm,js,bak,zip,tgz,txt,old,html,conf,asp,aspx,%20,config,log,xhtml -f -r -u $URL",
     "output": "dirsearch_result.txt"
